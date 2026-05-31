@@ -1,8 +1,6 @@
 fastapi
-uvicorn
+Xuvicorn
 supabase
 twilio
 python-dotenv
 geopy
-transformers
-torch
