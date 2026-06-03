@@ -1,26 +1,29 @@
-from transformers import pipeline
 from dotenv import load_dotenv
-
 load_dotenv()
 
-# Load the model once at startup
-print("Loading AI classifier... (this takes ~30 seconds first time)")
-classifier = pipeline("zero-shot-classification", model="cross-encoder/nli-MiniLM2-L6-H768")
-print("Classifier ready!")
+print("Classifier ready! (using keyword classifier)")
 
-LABELS = ["suspicious activity", "emergency", "noise or irrelevant"]
+EMERGENCY_KEYWORDS = [
+    "fire", "shooting", "shot", "gun", "knife", "stab", "attack", "attacked",
+    "help", "emergency", "dying", "dead", "blood", "accident", "crash", "rape",
+    "hijack", "hijacking", "explosion", "bomb"
+]
 
-LABEL_MAP = {
-    "suspicious activity": "SUSPICIOUS",
-    "emergency": "EMERGENCY",
-    "noise or irrelevant": "NOISE"
-}
+SUSPICIOUS_KEYWORDS = [
+    "suspicious", "stranger", "unknown", "watching", "following", "lurking",
+    "broken", "forced", "tampered", "unusual", "weird", "strange", "prowling",
+    "loitering", "masked", "hooded", "armed", "threatening", "threat"
+]
 
 def classify_report(text: str) -> dict:
-    result = classifier(text, candidate_labels=LABELS)
-    top_label = result["labels"][0]
-    top_score = result["scores"][0]
-    return {
-        "label": LABEL_MAP[top_label],
-        "confidence": round(top_score, 3)
-    }
+    text_lower = text.lower()
+
+    for word in EMERGENCY_KEYWORDS:
+        if word in text_lower:
+            return {"label": "EMERGENCY", "confidence": 0.95}
+
+    for word in SUSPICIOUS_KEYWORDS:
+        if word in text_lower:
+            return {"label": "SUSPICIOUS", "confidence": 0.85}
+
+    return {"label": "NOISE", "confidence": 0.75}

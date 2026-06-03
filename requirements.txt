@@ -1,8 +1,8 @@
+cat > requirements.txt << 'EOF'
 fastapi
 uvicorn
 python-multipart
 supabase
-transformers
-torch
 requests
 python-dotenv
+EOF
